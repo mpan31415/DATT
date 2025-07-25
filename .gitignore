@@ -1,6 +1,7 @@
 __pycache__/
 */__pycache__/
 *.swp
+*.vscode
 learning/data/
 learning/MPC/
 learning/logs/*
@@ -10,4 +11,3 @@ learning/c_generated_code/
 .vs/
 media/
 logging/
-configuration/

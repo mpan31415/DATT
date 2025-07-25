@@ -14,16 +14,38 @@
 
 ## Setup
 
-First, install `requirements.txt`.
+#### 1. Create conda environment:
+```
+mamba create -n datt python=3.10
+mamba activate datt
+```
 
+#### 2. Extra steps to solve compatibility issues:
+```
+# 1. edit requirements.txt and comment out the following 2 lines:
+gym==0.21.0
+torch==1.13.0+cu117
+
+# 2. manually install openai gym (0.21.0)
+pip install git+https://github.com/openai/gym.git@9180d12e1b66e7e2a1a622614f787a6ec147ac40
+
+# 3. manually install torch (1.13.0) with CUDA (11.7) support
+pip install torch==1.13.0 --extra-index-url https://download.pytorch.org/whl/cu117
+```
+
+#### 3. Then, install the requirements:
+```
+pip install -r requirements.txt
+```
+
+#### 4. Configure the PYTHONPATH
 The repo requires the parent folder exist on `PYTHONPATH`.
 
 The recommended setup is to create a folder named "python" (e.g. in your home folder) and then clone `DATT` in `~/python`.
 
 ```
-mkdir ~/python
-cd ~/python
-git clone https://github.com/KevinHuang8/DATT
+mkdir ~/python && cd ~/python
+git clone https://github.com/mpan31415/DATT.git
 ```
 
 Next, in your `.bashrc`, add `${HOME}/python` to `PYTHONPATH`.
@@ -38,17 +60,36 @@ Change directory and rc file as needed (e.g. if using zsh).
 
 This repo contains the simulation code for training DATT and running MPPI and PID. For running on the real Crazyflie, see our drone stack here: https://github.com/Rwik2000/crazyswarm_DATT
 
-### Summary:
+### Training
 
-For training the main policy from the DATT paper, from the `learning` folder, run:
+1. For training the main policy from the DATT paper, from the `learning` folder, run:
 
-`python train_policy.py -n policy -c DATT_config.py -t trajectory_fbff --ref mixed_ref -ts 25000000 --checkpoint True` 
+```
+python train_policy.py -n policy -c DATT_config.py -t trajectory_fbff --ref mixed_ref -ts 25000000 --checkpoint True
+```
+
+2. To train a hovering policy, run:
+```
+python train_policy.py -n kolibri_hover -c kolibri_datt_hover.py -t hover -ts 500000 --checkpoint True
+```
+
+### Evaluating
+
+To visualize tensorboard logs, run:
+```
+cd /path/to/tensorboard/logs
+tensorboard --logdir=. --port=6006
+```
 
 To evaluate the policy, run:
 
-`python eval_policy.py -n policy -c DATT_config.py -t trajectory_fbff --ref random_zigzag -s 500 --viz True`
+```
+# tracking policy
+python eval_policy.py -n policy -c DATT_config.py -t trajectory_fbff --ref random_zigzag -s 500 --viz True
 
-More detailed instructions to come. Crazyswarm code pending.
+# hovering policy
+python eval_policy.py -n kolibri_hover_500000_steps -c kolibri_datt_hover.py -t hover --ref hover -s 500 --viz True
+```
 
 ### Setting up a task / configuration
 
