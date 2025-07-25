@@ -70,6 +70,8 @@ python train_policy.py -n policy -c DATT_config.py -t trajectory_fbff --ref mixe
 
 2. To train a hovering policy, run:
 ```
+# python train_policy.py -n <policy_name> -c <env_config>.py -t hover -ts 500000 --checkpoint True
+
 python train_policy.py -n kolibri_hover -c kolibri_datt_hover.py -t hover -ts 500000 --checkpoint True
 ```
 
@@ -173,6 +175,10 @@ We are providing pre-trained models for DATT for different tasks :
 
 
 ```bash
+# python3 main.py --cntrl <controller> --cntrl_config <cntrl_config_preset> --env_config <env_config>.py --ref <task>
+
+# kolibri hover
+python3 main.py --cntrl datt --cntrl_config kolibri_datt_hover_config --env_config kolibri_datt_hover.py --ref hover
 # hover
 python3 main.py --cntrl datt --cntrl_config datt_hover_config --env_config datt_hover.py --ref hover
 # trajectory tracking without adaptation

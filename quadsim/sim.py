@@ -75,6 +75,36 @@ class QuadSim:
       ts.add_point(time=t, **state.__dict__, force=bodyz_force, angvel=angvel, **controlvars)
 
     return self.step_angvel_raw(dt, bodyz_force, angvel, dists=dists)
+  
+
+  def step_lowfid(self, dt, bodyz_force, angvel, dists=None):
+    """
+    Low fidelity step function that uses simplified quadrotor dynamics model.
+    """
+    if dists is None:
+      dists = []
+
+    if bodyz_force < 0 or bodyz_force > self.force_limit:
+      # print("Clipping force!", bodyz_force)
+      bodyz_force = np.clip(bodyz_force, 0, self.force_limit)
+
+    angvel_norm = np.linalg.norm(angvel)
+    if angvel_norm > self.angvel_limit:
+      # print("Clipping angvel!", angvel)
+      angvel *= self.angvel_limit / angvel_norm
+
+    state = self.rb.state()
+    force_world = bodyz_force * state.rot.apply(e3) + self.mass * self.gvec
+
+    for dist in dists:
+      d = dist.get(state, (bodyz_force, 0))
+      # print("Disturbance:", d[:3])
+      force_world += d[:3]
+
+    self.rb.step_angvel(dt, force=force_world, angvel=angvel)
+
+    return state
+  
 
   def step_angvel_raw(self, dt, bodyz_force, angvel, dists=None, linear_var=0.0, angular_var=0.0, latency=0, k=1, second_order=False, kw=1, kt=1, return_info=False):
     if dists is None:

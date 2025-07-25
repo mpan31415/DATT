@@ -235,7 +235,8 @@ class BaseQuadsimEnv(Env):
                     scale=self.wind_vector
                 )
             ]
-
+        
+        ######## high-fidelity simulation ########
         state = self.quadsim.step_angvel_raw(self.dt, u, angvel,
                 dists=self.dists, linear_var=self.linear_var, angular_var=self.angular_var,
                 latency=self.latency,
@@ -244,6 +245,10 @@ class BaseQuadsimEnv(Env):
                 kw=self.kw if self.second_order_delay else 1.0,
                 kt=self.kt if self.second_order_delay else 1.0
             )
+        
+        ######## low-fidelity simulation ########
+        # state = self.quadsim.step_lowfid(self.dt, u, angvel, dists=self.dists)
+
         self.t += self.dt
 
         failed = False
