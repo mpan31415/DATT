@@ -27,6 +27,20 @@ datt_adaptive_RMA_config.adaptation_type = 'rma'
 datt_adaptive_RMA_config.adaptive_policy_name = 'wind_RMA'
 
 
+################### FOR KOLIBRI TASKS ###################
+
+# Kolibri DATT hover
+kolibri_datt_hover_config = DATTConfig()
+kolibri_datt_hover_config.policy_name = 'kolibri_hover_500000_steps'
+kolibri_datt_hover_config.task = DroneTask.HOVER
+kolibri_datt_hover_config.adaptive = True
+kolibri_datt_hover_config.adaptation_type = 'l1'
+kolibri_datt_hover_config.adaptive_policy_name = None
+
+
+
+################### OTHER CONTROLLERS ###################
+
 pid_config = PIDConfig()
 
 

@@ -4,6 +4,7 @@ import numpy as np
 
 from DATT.quadsim.sim import QuadSim
 from DATT.quadsim.models import IdentityModel
+from DATT.quadsim.dist import WindField, ConstantForce
 
 from DATT.refs.pointed_star import NPointedStar
 from DATT.learning.configs import *
@@ -67,7 +68,7 @@ if __name__ == "__main__":
 
 
     dists = [
-    # ConstantForce(np.array([4, 4, 4]))
+    ConstantForce(np.array([2.0, 0.0, 0.0]))
     # WindField(pos=np.array((-1, 1.5, 0.0)), direction=np.array((1, 0, 0)), noisevar=25.0, vmax=1500.0, decay_long=1.8)
     ]
     ts = quadsim.simulate(dt=dt, t_end=t_end, controller=controller, dists=dists)
