@@ -13,10 +13,8 @@ from DATT.configuration import (
 from DATT.controllers import cntrl_config_presets
 from DATT.controllers.datt_controller import DATTController
 
-from time import time
 
-
-class OnlineStateHoverRolloutNode:
+class HoveringRolloutNode:
 
     def __init__(self, quad_name="kolibri", target_pos=np.array([0.0, 0.0, 1.0]), adaptive=False):
 
@@ -152,7 +150,7 @@ class OnlineStateHoverRolloutNode:
 ##############################################################################
 def main():
 
-    rospy.init_node("datt_state_hover_rollout_node", anonymous=True)
+    rospy.init_node("datt_hovering_rollout_node", anonymous=True)
 
     # get launch params
     quad_name = rospy.get_param("~quad_name", "kolibri")
@@ -165,7 +163,7 @@ def main():
     rospy.loginfo(f"adaptive: {adaptive}")
 
     # create node class
-    node = OnlineStateHoverRolloutNode(quad_name=quad_name, target_pos=target_pos, adaptive=adaptive)
+    node = HoveringRolloutNode(quad_name=quad_name, target_pos=target_pos, adaptive=adaptive)
     rospy.spin()
 
 
