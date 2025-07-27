@@ -6,6 +6,7 @@ learning/data/
 learning/MPC/
 learning/logs/*
 learning/saved_policies/
+learning/all_policy_checkpoints/
 c_generated_code/
 learning/c_generated_code/
 .vs/
