@@ -36,7 +36,7 @@ kolibri_hover_config.task = DroneTask.HOVER
 
 # Kolibri adaptive hover
 kolibri_hover_adaptive_config = DATTConfig()
-kolibri_hover_adaptive_config.policy_name = 'kolibri_hover_adaptive15'
+kolibri_hover_adaptive_config.policy_name = 'kolibri_hover_adaptive10'
 kolibri_hover_adaptive_config.task = DroneTask.HOVER
 kolibri_hover_adaptive_config.adaptive = True
 kolibri_hover_adaptive_config.adaptation_type = 'l1'

@@ -3,8 +3,15 @@
 
   <arg name="quad_name" default="kolibri"/>
   <arg name="target_pos" default="1.5, 0.0, 1.5"/>
+  <arg name="adaptive" default="true"/>
 
   <node name="state_hovering_node" pkg="datt_ros" type="state_hovering.py" output="screen">
+    <param name="quad_name" type="string" value="$(arg quad_name)"/>
+    <param name="target_pos" type="string" value="$(arg target_pos)"/>
+    <param name="adaptive" type="bool" value="$(arg adaptive)"/>
+  </node>
+
+  <node name="hovering_scheduler_node" pkg="datt_ros" type="hovering_scheduler.py" output="screen">
     <param name="quad_name" type="string" value="$(arg quad_name)"/>
     <param name="target_pos" type="string" value="$(arg target_pos)"/>
   </node>
