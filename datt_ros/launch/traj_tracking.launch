@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<launch>
+
+  <arg name="quad_name" default="kolibri"/>
+  <arg name="ref_traj_name" default="circle"/>
+  <arg name="adaptive" default="false"/>
+
+  <node name="traj_tracking_rollout_node" pkg="datt_ros" type="traj_tracking_rollout.py" output="screen">
+    <param name="quad_name" type="string" value="$(arg quad_name)"/>
+    <param name="ref_traj_name" type="string" value="$(arg ref_traj_name)"/>
+    <param name="adaptive" type="bool" value="$(arg adaptive)"/>
+  </node>
+
+  <node name="traj_tracking_scheduler_node" pkg="datt_ros" type="traj_tracking_scheduler.py" output="screen">
+    <param name="quad_name" type="string" value="$(arg quad_name)"/>
+    <param name="ref_traj_name" type="string" value="$(arg ref_traj_name)"/>
+  </node>
+
+</launch>

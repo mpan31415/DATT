@@ -7,19 +7,28 @@ from std_msgs.msg import Bool
 from utils.conversion import *
 
 from DATT.configuration import (
-    kolibri_hover,
-    kolibri_hover_adaptive,
+    kolibri_tracking,
+    kolibri_tracking_adaptive,
 )
 from DATT.controllers import cntrl_config_presets
 from DATT.controllers.datt_controller import DATTController
+from DATT.refs import TrajectoryRef
 
 
-class HoveringRolloutNode:
+class TrajTrackingRolloutNode:
 
-    def __init__(self, quad_name="kolibri", target_pos=np.array([0.0, 0.0, 1.0]), adaptive=False):
+    def __init__(self, quad_name="kolibri", ref_traj_name="circle", adaptive=False):
 
         self.dt = 0.02  # seconds
-        self.target_pos = target_pos
+        ref_traj_name = "my_" + ref_traj_name + "_ref"
+
+        # set position offset
+        if ref_traj_name == "my_circle_ref":
+            self.offset_pos = np.array([0.0, 0.0, 1.0])
+        elif ref_traj_name == "my_fig8_ref":
+            self.offset_pos = np.array([1.5, 0.0, 1.0])
+        else:
+            self.offset_pos = np.array([0.0, 0.0, 0.0])
         
         # subscribers
         self.state_sub = rospy.Subscriber(f"{quad_name}/agiros_pilot/state", QuadState, self.state_callback, queue_size=100, tcp_nodelay=True)
@@ -38,17 +47,25 @@ class HoveringRolloutNode:
 
         # configs for creating the controller
         if adaptive:
-            self.datt_config = kolibri_hover_adaptive.config
-            self.control_config = cntrl_config_presets.kolibri_hover_adaptive_config
-            print("\033[93m[rollout]\033[0m Using adaptive hovering config!")
+            self.datt_config = kolibri_tracking_adaptive.config
+            self.control_config = cntrl_config_presets.kolibri_tracking_adaptive_config
+            print("\033[93m[rollout]\033[0m Using adaptive tracking config!")
         else:
-            self.datt_config = kolibri_hover.config
-            self.control_config = cntrl_config_presets.kolibri_hover_config
-            print("\033[93m[rollout]\033[0m Using standard hovering config!")
+            self.datt_config = kolibri_tracking.config
+            self.control_config = cntrl_config_presets.kolibri_tracking_config
+            print("\033[93m[rollout]\033[0m Using standard tracking config!")
+
+        # create reference trajectory function
+        ref_traj_obj = TrajectoryRef.get_by_value(ref_traj_name)
+        ref_traj_func = ref_traj_obj.ref(self.datt_config.ref_config)
 
         # create controller class
         self.controller = DATTController(self.datt_config, self.control_config)
         print("\033[93m[rollout]\033[0m Created DATT controller!")
+        # set the reference trajectory function
+        self.controller.ref_func = ref_traj_func
+        self.controller.start_pos = np.zeros(3)
+
         # warmup the controller
         warmup_inputs = {
             't' : 0.1, 
@@ -127,8 +144,8 @@ class HoveringRolloutNode:
 
         pos, quat, vel, omega = quad_state_from_msg(msg)      # note: quat is in w, x, y, z order
 
-        # subtract the hovering target position, since policy is trained to hover at zero position
-        pos -= self.target_pos
+        # subtract the traj offset pos, since policy is trained to start tracking from zero
+        pos -= self.offset_pos
 
         # update state struct
         self.state.pos = pos
@@ -151,20 +168,19 @@ class HoveringRolloutNode:
 ##############################################################################
 def main():
 
-    rospy.init_node("datt_hovering_rollout_node", anonymous=True)
+    rospy.init_node("datt_traj_tracking_rollout_node", anonymous=True)
 
     # get launch params
     quad_name = rospy.get_param("~quad_name", "kolibri")
-    target_pos = rospy.get_param("~target_pos", "0.0, 0.0, 1.0")
-    target_pos = [float(x) for x in target_pos.split(",")]
+    ref_traj_name = rospy.get_param("~ref_traj_name", "circle")
     adaptive = rospy.get_param("~adaptive", False)
 
     rospy.loginfo(f"quad_name: {quad_name}")
-    rospy.loginfo(f"target_pos: {target_pos}")
+    rospy.loginfo(f"ref_traj_name: {ref_traj_name}")
     rospy.loginfo(f"adaptive: {adaptive}")
 
     # create node class
-    node = HoveringRolloutNode(quad_name=quad_name, target_pos=target_pos, adaptive=adaptive)
+    node = TrajTrackingRolloutNode(quad_name=quad_name, ref_traj_name=ref_traj_name, adaptive=adaptive)
     rospy.spin()
 
 
