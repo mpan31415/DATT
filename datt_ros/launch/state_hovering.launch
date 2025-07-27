@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+<launch>
+
+  <arg name="quad_name" default="kolibri"/>
+  <arg name="low" default="false"/>
+
+  <node name="state_hovering_node" pkg="datt_ros" type="state_hovering.py" output="screen">
+    <param name="quad_name" type="string" value="$(arg quad_name)"/>
+    <param name="low_hover" type="bool" value="$(arg low)"/>
+  </node>
+
+</launch>
