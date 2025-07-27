@@ -237,17 +237,17 @@ class BaseQuadsimEnv(Env):
             ]
         
         ######## high-fidelity simulation ########
-        state = self.quadsim.step_angvel_raw(self.dt, u, angvel,
-                dists=self.dists, linear_var=self.linear_var, angular_var=self.angular_var,
-                latency=self.latency,
-                k=self.k,
-                second_order=self.second_order_delay,
-                kw=self.kw if self.second_order_delay else 1.0,
-                kt=self.kt if self.second_order_delay else 1.0
-            )
+        # state = self.quadsim.step_angvel_raw(self.dt, u, angvel,
+        #     dists=self.dists, linear_var=self.linear_var, angular_var=self.angular_var,
+        #     latency=self.latency,
+        #     k=self.k,
+        #     second_order=self.second_order_delay,
+        #     kw=self.kw if self.second_order_delay else 1.0,
+        #     kt=self.kt if self.second_order_delay else 1.0
+        # )
         
         ######## low-fidelity simulation ########
-        # state = self.quadsim.step_lowfid(self.dt, u, angvel, dists=self.dists)
+        state = self.quadsim.step_lowfid(self.dt, u, angvel, dists=self.dists)
 
         self.t += self.dt
 

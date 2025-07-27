@@ -29,13 +29,31 @@ datt_adaptive_RMA_config.adaptive_policy_name = 'wind_RMA'
 
 ################### FOR KOLIBRI TASKS ###################
 
-# Kolibri DATT hover
-kolibri_datt_hover_config = DATTConfig()
-kolibri_datt_hover_config.policy_name = 'kolibri_hover_500000_steps'
-kolibri_datt_hover_config.task = DroneTask.HOVER
-kolibri_datt_hover_config.adaptive = True
-kolibri_datt_hover_config.adaptation_type = 'l1'
-kolibri_datt_hover_config.adaptive_policy_name = None
+# Kolibri hover
+kolibri_hover_config = DATTConfig()
+kolibri_hover_config.policy_name = 'kolibri_hover_500000_steps'
+kolibri_hover_config.task = DroneTask.HOVER
+
+# Kolibri adaptive hover
+kolibri_hover_adaptive_config = DATTConfig()
+kolibri_hover_adaptive_config.policy_name = 'kolibri_hover_500000_steps'
+kolibri_hover_adaptive_config.task = DroneTask.HOVER
+kolibri_hover_adaptive_config.adaptive = True
+kolibri_hover_adaptive_config.adaptation_type = 'l1'
+kolibri_hover_adaptive_config.adaptive_policy_name = None
+
+# Kolibri tracking
+kolibri_tracking_config = DATTConfig()
+kolibri_tracking_config.policy_name = 'kolibri_tracking_circle_20000000_steps'
+kolibri_tracking_config.task = DroneTask.TRAJFBFF
+
+# Kolibri adaptive tracking
+kolibri_tracking_adaptive_config = DATTConfig()
+kolibri_tracking_adaptive_config.policy_name = 'kolibri_tracking_circle_20000000_steps'
+kolibri_tracking_adaptive_config.task = DroneTask.TRAJFBFF
+kolibri_tracking_adaptive_config.adaptive = True
+kolibri_tracking_adaptive_config.adaptation_type = 'l1'
+kolibri_tracking_adaptive_config.adaptive_policy_name = None
 
 
 

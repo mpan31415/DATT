@@ -61,18 +61,24 @@ Change directory and rc file as needed (e.g. if using zsh).
 This repo contains the simulation code for training DATT and running MPPI and PID. For running on the real Crazyflie, see our drone stack here: https://github.com/Rwik2000/crazyswarm_DATT
 
 ### Training
+Go to the `learning` folder and run:
 
-1. For training the main policy from the DATT paper, from the `learning` folder, run:
-
+1. To train a trajectory tracking policy, run:
 ```
-python train_policy.py -n policy -c DATT_config.py -t trajectory_fbff --ref mixed_ref -ts 25000000 --checkpoint True
+# no adaptation
+python train_policy.py -n kolibri_tracking -c kolibri_tracking.py -t trajectory_fbff --ref my_circle_ref -ts 25000000 --checkpoint True
+
+# L1 adaptation
+python train_policy.py -n kolibri_tracking_adaptive -c kolibri_tracking_adaptive.py -t trajectory_fbff --ref my_circle_ref -ts 25000000 --checkpoint True
 ```
 
 2. To train a hovering policy, run:
 ```
-# python train_policy.py -n <policy_name> -c <env_config>.py -t hover -ts 500000 --checkpoint True
+# no adaptation
+python train_policy.py -n kolibri_hover -c kolibri_hover.py -t hover -ts 500000 --checkpoint True
 
-python train_policy.py -n kolibri_hover -c kolibri_datt_hover.py -t hover -ts 500000 --checkpoint True
+# L1 adaptation
+python train_policy.py -n kolibri_hover_adaptive -c kolibri_hover_adaptive.py -t hover -ts 500000 --checkpoint True
 ```
 
 ### Evaluating
@@ -177,8 +183,16 @@ We are providing pre-trained models for DATT for different tasks :
 ```bash
 # python3 main.py --cntrl <controller> --cntrl_config <cntrl_config_preset> --env_config <env_config>.py --ref <task>
 
-# kolibri hover
-python3 main.py --cntrl datt --cntrl_config kolibri_datt_hover_config --env_config kolibri_datt_hover.py --ref hover
+# kolibri hover (without adaptation)
+python3 main.py --cntrl datt --cntrl_config kolibri_hover_config --env_config kolibri_hover.py --ref hover
+# kolibri hover (with L1 adaptation)
+python3 main.py --cntrl datt --cntrl_config kolibri_hover_adaptive_config --env_config kolibri_hover_adaptive.py --ref hover
+
+# kolibri tracking (without adaptation)
+python3 main.py --cntrl datt --cntrl_config kolibri_tracking_config --env_config kolibri_tracking.py --ref my_circle_ref
+# kolibri tracking (with L1 adaptation)
+python3 main.py --cntrl datt --cntrl_config kolibri_tracking_adaptive_config --env_config kolibri_tracking_adaptive.py --ref my_circle_ref
+
 # hover
 python3 main.py --cntrl datt --cntrl_config datt_hover_config --env_config datt_hover.py --ref hover
 # trajectory tracking without adaptation

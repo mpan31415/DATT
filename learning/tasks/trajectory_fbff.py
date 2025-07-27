@@ -14,6 +14,7 @@ class TrajectoryEnv(BaseQuadsimEnv):
   def __init__(self, config: AllConfig, ref=None, seed=None, fixed_seed=False, **kwargs):
     self.time_horizon = config.policy_config.time_horizon
     self.fb_term = config.policy_config.fb_term
+    print("REF TRAJ CLASS", ref)
     print('TIME HORIZON: ', self.time_horizon)
     print('USING FB: ', self.fb_term)
     self.seed = seed

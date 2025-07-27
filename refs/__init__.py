@@ -4,8 +4,10 @@ from enum import Enum
 
 from DATT.configuration.configuration import AllConfig, RefConfiguration
 from DATT.refs import (
-        lineref, square_ref, circle_ref, random_zigzag, setpoint_ref, polynomial_ref, random_zigzag_yaw,
-        chained_poly_ref, mixed_trajectory_ref, gen_trajectory, pointed_star, closed_polygon, base_ref)
+    lineref, square_ref, circle_ref, random_zigzag, setpoint_ref, polynomial_ref, random_zigzag_yaw,
+    chained_poly_ref, mixed_trajectory_ref, gen_trajectory, pointed_star, closed_polygon, base_ref,
+    my_circle_ref, my_fig8_ref,
+)
 from DATT.refs.takeofflanding import takeofflanding_ref
 
 class TrajectoryRef(Enum):
@@ -22,6 +24,9 @@ class TrajectoryRef(Enum):
     GEN_TRAJ = 'gen_traj'
     POINTED_STAR = 'pointed_star'
     CLOSED_POLY = 'closed_poly'
+    
+    MY_CIRCLE_REF = 'my_circle_ref'
+    MY_FIG8_REF = 'my_fig8_ref'
 
     # def ref(self, y_max=0.0, seed=None, init_ref=None, diff_axis=False, z_max=0.0, env_diff_seed=False, include_all=False, ref_name=None, **kwargs):
     def ref(self, config: RefConfiguration, seed=None, env_diff_seed=False, **kwargs):
@@ -39,7 +44,11 @@ class TrajectoryRef(Enum):
             TrajectoryRef.CHAINED_POLY_REF: chained_poly_ref.ChainedPolyRef(altitude=0, use_y=(config.y_max > 0), seed=seed, min_dt=1.5, max_dt=4.0, degree=3, env_diff_seed=env_diff_seed, **kwargs),
             TrajectoryRef.MIXED_REF: mixed_trajectory_ref.MixedTrajectoryRef(altitude=0, include_all=config.include_all, init_ref=config.init_ref, ymax=config.y_max, zmax=config.z_max, diff_axis=config.diff_axis, env_diff_seed=env_diff_seed, seed=seed, **kwargs),
             TrajectoryRef.POINTED_STAR: pointed_star.NPointedStar(random=True, seed=seed, env_diff_seed=env_diff_seed, **kwargs),
-            TrajectoryRef.CLOSED_POLY: closed_polygon.ClosedPoly(random=True, seed=seed, env_diff_seed=env_diff_seed, **kwargs)
+            TrajectoryRef.CLOSED_POLY: closed_polygon.ClosedPoly(random=True, seed=seed, env_diff_seed=env_diff_seed, **kwargs),
+
+            TrajectoryRef.MY_CIRCLE_REF: my_circle_ref.MyCircleRef(altitude=0, rad=1.0, period=10.0/3.0, **kwargs),
+            TrajectoryRef.MY_FIG8_REF: my_fig8_ref.MyFig8Ref(sx=1.5, sy=1.0, period=5.0, **kwargs),
+
         }[TrajectoryRef(self._value_)]
     
     def ref_cf(self, seed=None, env_diff_seed=False, **kwargs):
