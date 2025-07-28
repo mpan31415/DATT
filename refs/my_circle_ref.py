@@ -14,7 +14,7 @@ class MyCircleRef(BaseRef):
     def pos(self, t):
         return np.array([
             -self.radius * np.cos(t / self.c) + self.offset[0],
-            self.radius * np.sin(t / self.c) + self.offset[1],
+            -self.radius * np.sin(t / self.c) + self.offset[1],
             t*0 + self.altitude
             ])
 

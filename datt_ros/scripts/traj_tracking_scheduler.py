@@ -36,7 +36,7 @@ class TrajTrackingSchedulerNode:
         # define time parameters
         self.init_sleep_time = 10.0
         self.reach_start_pos_time = 3.0                                 # time to reach start position
-        self.policy_rollout_time = 20.0                                 # run policy for the length of the trajectory
+        self.policy_rollout_time = 60.0                                 # run policy for the length of the trajectory
         self.wait_time = 1.0
         rospy.Timer(rospy.Duration(0.01), self.publish_policy_activation)
 
