@@ -21,28 +21,28 @@ class MyCircleRef(BaseRef):
     def vel(self, t):
         return np.array([
             self.radius / self.c * np.sin(t / self.c),
-            self.radius / self.c * np.cos(t / self.c),
+            -self.radius / self.c * np.cos(t / self.c),
             t*0
             ])
 
     def acc(self, t):
         return np.array([
             self.radius / (self.c**2) * np.cos(t / self.c),
-            -self.radius / (self.c**2) * np.sin(t / self.c),
+            self.radius / (self.c**2) * np.sin(t / self.c),
             t*0
         ])
 
     def jerk(self, t):
         return np.array([
             -self.radius / (self.c**3) * np.sin(t / self.c),
-            -self.radius / (self.c**3) * np.cos(t / self.c),
+            self.radius / (self.c**3) * np.cos(t / self.c),
             t*0
         ])
 
     def snap(self, t):
         return np.array([
             -self.radius / (self.c**4) * np.cos(t / self.c),
-            self.radius / (self.c**4) * np.sin(t / self.c),
+            -self.radius / (self.c**4) * np.sin(t / self.c),
             t*0
         ])
 

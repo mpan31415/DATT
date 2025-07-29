@@ -63,7 +63,15 @@ kolibri_tracking_adaptive_config.adaptive_policy_name = None
 
 ################### OTHER CONTROLLERS ###################
 
-pid_config = PIDConfig()
-
-
 mppi_config = MPPIConfig()
+mppi_config.H = 40
+mppi_config.N = 2048
+mppi_config.run_L1 = True
+### misc ###
+mppi_config.show_wind_terms = False
+mppi_config.show_policy_time = False
+
+
+pid_config = PIDConfig()
+### misc ###
+pid_config.show_policy_time = False

@@ -43,7 +43,9 @@ class MPPIController(Controller):
 		self.mppi_controller = MPPI_thrust_omega(config, cntrl_config)
 		self.f_t = np.zeros(3)
 
-		self.runL1 = False
+		self.runL1 = cntrl_config.run_L1
+		self.show_wind_terms = cntrl_config.show_wind_terms
+		self.show_policy_time = cntrl_config.show_policy_time
 
 		self.prev_t = 0
 		self.start_pos = np.zeros(3)
@@ -53,6 +55,9 @@ class MPPIController(Controller):
 											)
 
 	def response(self, **response_inputs):
+
+		tic = time()
+
 		t = response_inputs.get('t')
 		state : State_struct = response_inputs.get('state')
 		# ref_dict : dict = response_inputs.get('ref')
@@ -77,17 +82,16 @@ class MPPIController(Controller):
 		# # start = time.time()
 
 		wind_terms = self.adaptation_module.adaptation_step(vel, self.f_t)
-		print("Wind terms:", wind_terms)
+		if self.show_wind_terms:
+			print("Wind terms:", wind_terms)
 		
 		L1_adapt = torch.zeros(3)
 		if self.runL1:
 			L1_adapt = torch.as_tensor(wind_terms, dtype=torch.float32)
 
 		# if self.pseudo_adapt:
-		tic = time()
 		# action = self.mppi_controller.policy_with_ref_func(state=state_torch, time=t, new_ref_func = ref_func_obj).cpu().numpy()
 		action = self.mppi_controller.policy_with_ref_func(state=state_torch, time=t, new_ref_func = ref_func_obj, L1_adapt=L1_adapt).cpu().numpy()
-		# print(f"MPPI time: {time() - tic:.4f} seconds")
 		# else:
 		# action = self.mppi_controller.policy_with_ref_func(state=state_torch, time=t, new_ref_func=self.ref_func_t, L1_adapt=L1_adapt).cpu().numpy()
 		# print(time.time() - start)
@@ -100,6 +104,10 @@ class MPPIController(Controller):
 		self.f_t = rot.apply(np.array([0, 0, action[0]]))
 
 		self.prev_t = t
+
+		if self.show_policy_time:
+			print(f"MPPI policy time: {time() - tic:.4f} seconds")
+
 		return action[THRUST], action[ANGVEL]
 
 

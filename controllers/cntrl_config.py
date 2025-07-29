@@ -12,6 +12,10 @@ class MPPIConfig:
     K_delay = 1
     sim_K_delay  = 1
 
+    run_L1 = True   # run L1 adaptation
+    show_wind_terms = False
+    show_policy_time = False
+
     sample_std = [0.25, 0.7, 0.7, 0.7] # standard deviation for sampling = [thrust (unit = hovering thrust), omega (unit = rad/s)]
     gamma_mean = 1.0 # learning rate
     gamma_Sigma = 0. # learning rate
@@ -41,6 +45,8 @@ class PIDConfig:
     kp_rot =   150.0/16
     yaw_gain = 220.0/16
     kp_ang =   16
+
+    show_policy_time = False
 
 class DATTConfig:
     task = DroneTask.HOVER

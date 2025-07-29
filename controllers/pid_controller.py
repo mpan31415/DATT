@@ -6,6 +6,8 @@ from DATT.controllers.cntrl_config import PIDConfig
 from DATT.quadsim.rigid_body import State_struct
 from DATT.configuration.configuration import AllConfig
 
+from time import time
+
 
 class PIDController(Controller):
   def __init__(self, config : AllConfig, cntrl_config : PIDConfig):
@@ -18,8 +20,12 @@ class PIDController(Controller):
     self.prev_t = None
     self.start_pos = np.zeros(3)
 
+    self.show_policy_time = self.pid_config.show_policy_time
+
 
   def response(self, **response_inputs ):
+
+    tic = time()
     
     t = response_inputs.get('t')
     state : State_struct = response_inputs.get('state')
@@ -63,6 +69,10 @@ class PIDController(Controller):
       
     self.v_prev = state.vel
     self.prev_t = t
+
+    if self.show_policy_time:
+      toc = time()
+      print(f"PIDController response time: {toc - tic:.4f} seconds")
 
     # action = np.r_[acc_des, omega_des]
     return acc_des, omega_des

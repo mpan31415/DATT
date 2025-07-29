@@ -183,21 +183,27 @@ We are providing pre-trained models for DATT for different tasks :
 ```bash
 # python3 main.py --cntrl <controller> --cntrl_config <cntrl_config_preset> --env_config <env_config>.py --ref <task>
 
-# kolibri hover (without adaptation)
+# kolibri hover (DATT without adaptation)
 python3 main.py --cntrl datt --cntrl_config kolibri_hover_config --env_config kolibri_hover.py --ref hover
-# kolibri hover (with L1 adaptation)
+# kolibri hover (DATT with L1 adaptation)
 python3 main.py --cntrl datt --cntrl_config kolibri_hover_adaptive_config --env_config kolibri_hover_adaptive.py --ref hover
+# kolibri hover (L1-MPC)
+python3 main.py --cntrl mppi --cntrl_config mppi_config --env_config kolibri_mppi.py --ref hover
+# kolibri hover (DF-PID)
+python3 main.py --cntrl pid --cntrl_config pid_config --env_config kolibri_pid.py --ref hover
 
-# kolibri tracking (without adaptation)
+################################################################################################
+
+# kolibri tracking (DATT without adaptation)
 python3 main.py --cntrl datt --cntrl_config kolibri_tracking_config --env_config kolibri_tracking.py --ref my_circle_ref
-# kolibri tracking (with L1 adaptation)
+# kolibri tracking (DATT with L1 adaptation)
 python3 main.py --cntrl datt --cntrl_config kolibri_tracking_adaptive_config --env_config kolibri_tracking_adaptive.py --ref my_circle_ref
-
-# MPPI controller
+# kolibri tracking (L1-MPC)
 python3 main.py --cntrl mppi --cntrl_config mppi_config --env_config kolibri_mppi.py --ref my_circle_ref
-
-# PID controller
+# kolibri tracking (DF-PID)
 python3 main.py --cntrl pid --cntrl_config pid_config --env_config kolibri_pid.py --ref my_circle_ref
+
+################################################################################################
 
 # hover
 python3 main.py --cntrl datt --cntrl_config datt_hover_config --env_config datt_hover.py --ref hover
