@@ -3,12 +3,12 @@
 
   <arg name="quad_name" default="kolibri"/>
   <arg name="target_pos" default="1.5, 0.0, 1.5"/>
-  <arg name="adaptive" default="false"/>
+  <arg name="controller_type" default="pid"/>
 
   <node name="hovering_rollout_node" pkg="datt_ros" type="hovering_rollout.py" output="screen">
     <param name="quad_name" type="string" value="$(arg quad_name)"/>
     <param name="target_pos" type="string" value="$(arg target_pos)"/>
-    <param name="adaptive" type="bool" value="$(arg adaptive)"/>
+    <param name="controller_type" type="string" value="$(arg controller_type)"/>
   </node>
 
   <node name="hovering_scheduler_node" pkg="datt_ros" type="hovering_scheduler.py" output="screen">

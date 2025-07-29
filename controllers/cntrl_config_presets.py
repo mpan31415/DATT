@@ -65,13 +65,20 @@ kolibri_tracking_adaptive_config.adaptive_policy_name = None
 
 mppi_config = MPPIConfig()
 mppi_config.H = 40
-mppi_config.N = 2048
-mppi_config.run_L1 = True
+mppi_config.N = 4096
+mppi_config.run_L1 = False
 ### misc ###
 mppi_config.show_wind_terms = False
 mppi_config.show_policy_time = False
 
 
 pid_config = PIDConfig()
+# for tracking
+pid_config.kp_pos = 24.0
+pid_config.kd_pos = 8.0
+pid_config.ki_pos = 2.4  # 0 for sim
+pid_config.kp_rot = 150.0 / 16
+pid_config.yaw_gain = 220.0 / 16
+pid_config.kp_ang = 16
 ### misc ###
 pid_config.show_policy_time = False

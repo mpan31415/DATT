@@ -9,14 +9,18 @@ from utils.conversion import *
 from DATT.configuration import (
     kolibri_hover,
     kolibri_hover_adaptive,
+    kolibri_mppi,
+    kolibri_pid,
 )
 from DATT.controllers import cntrl_config_presets
 from DATT.controllers.datt_controller import DATTController
+from DATT.controllers.mppi_controller import MPPIController
+from DATT.controllers.pid_controller import PIDController
 
 
 class HoveringRolloutNode:
 
-    def __init__(self, quad_name="kolibri", target_pos=np.array([0.0, 0.0, 1.0]), adaptive=False):
+    def __init__(self, quad_name="kolibri", target_pos=np.array([0.0, 0.0, 1.0]), controller_type="pid"):
 
         self.dt = 0.02  # seconds
         self.target_pos = target_pos
@@ -37,25 +41,43 @@ class HoveringRolloutNode:
         self.state = StateStruct()
 
         # configs for creating the controller
-        if adaptive:
-            self.datt_config = kolibri_hover_adaptive.config
-            self.control_config = cntrl_config_presets.kolibri_hover_adaptive_config
-            print("\033[93m[rollout]\033[0m Using adaptive hovering config!")
-        else:
-            self.datt_config = kolibri_hover.config
+        if controller_type == "datt":
+            self.env_config = kolibri_hover.config
             self.control_config = cntrl_config_presets.kolibri_hover_config
-            print("\033[93m[rollout]\033[0m Using standard hovering config!")
+            print("\033[93m[rollout]\033[0m Using standard DATT hovering config!")
+        elif controller_type == "datt_adaptive":
+            self.env_config = kolibri_hover_adaptive.config
+            self.control_config = cntrl_config_presets.kolibri_hover_adaptive_config
+            print("\033[93m[rollout]\033[0m Using adaptive DATT hovering config!")
+        elif controller_type == "mpc":
+            self.env_config = kolibri_mppi.config
+            self.control_config = cntrl_config_presets.mppi_config
+            print("\033[93m[rollout]\033[0m Using L1 MPC hovering config!")
+        elif controller_type == "pid":
+            self.env_config = kolibri_pid.config
+            self.control_config = cntrl_config_presets.pid_config
+            print("\033[93m[rollout]\033[0m Using PID hovering config!")
+        else:
+            raise ValueError(f"Unknown controller type: {controller_type}")
 
         # create controller class
-        self.controller = DATTController(self.datt_config, self.control_config)
-        print("\033[93m[rollout]\033[0m Created DATT controller!")
+        if controller_type == "datt" or controller_type == "datt_adaptive":
+            self.controller = DATTController(self.env_config, self.control_config)
+        elif controller_type == "mpc":
+            self.controller = MPPIController(self.env_config, self.control_config)
+        elif controller_type == "pid":
+            self.controller = PIDController(self.env_config, self.control_config)
+        else:
+            raise ValueError(f"Unknown controller type: {controller_type}")
+            
+        print("\033[93m[rollout]\033[0m Created controller!")
         # warmup the controller
         warmup_inputs = {
             't' : 0.1, 
             'state' : self.state, 
         }
         self.controller.response(**warmup_inputs)
-        print("\033[93m[rollout]\033[0m Warmed up DATT controller!")
+        print("\033[93m[rollout]\033[0m Warmed up controller!")
 
         # initial countdown
         self.time_start = rospy.Time.now()
@@ -157,14 +179,14 @@ def main():
     quad_name = rospy.get_param("~quad_name", "kolibri")
     target_pos = rospy.get_param("~target_pos", "0.0, 0.0, 1.0")
     target_pos = [float(x) for x in target_pos.split(",")]
-    adaptive = rospy.get_param("~adaptive", False)
+    controller_type = rospy.get_param("~controller_type", "pid")
 
     rospy.loginfo(f"quad_name: {quad_name}")
     rospy.loginfo(f"target_pos: {target_pos}")
-    rospy.loginfo(f"adaptive: {adaptive}")
+    rospy.loginfo(f"controller_type: {controller_type}")
 
     # create node class
-    node = HoveringRolloutNode(quad_name=quad_name, target_pos=target_pos, adaptive=adaptive)
+    node = HoveringRolloutNode(quad_name=quad_name, target_pos=target_pos, controller_type=controller_type)
     rospy.spin()
 
 

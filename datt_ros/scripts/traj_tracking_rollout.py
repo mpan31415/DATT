@@ -10,16 +10,18 @@ from DATT.configuration import (
     kolibri_tracking,
     kolibri_tracking_adaptive,
     kolibri_mppi,
+    kolibri_pid,
 )
 from DATT.controllers import cntrl_config_presets
 from DATT.controllers.datt_controller import DATTController
 from DATT.controllers.mppi_controller import MPPIController
+from DATT.controllers.pid_controller import PIDController
 from DATT.refs import TrajectoryRef
 
 
 class TrajTrackingRolloutNode:
 
-    def __init__(self, quad_name="kolibri", ref_traj_name="circle", controller_type=False):
+    def __init__(self, quad_name="kolibri", ref_traj_name="circle", controller_type="pid"):
 
         self.dt = 0.02  # seconds
         ref_traj_name = "my_" + ref_traj_name + "_ref"
@@ -60,16 +62,27 @@ class TrajTrackingRolloutNode:
             self.env_config = kolibri_mppi.config
             self.control_config = cntrl_config_presets.mppi_config
             print("\033[93m[rollout]\033[0m Using L1 MPC tracking config!")
+        elif controller_type == "pid":
+            self.env_config = kolibri_pid.config
+            self.control_config = cntrl_config_presets.pid_config
+            print("\033[93m[rollout]\033[0m Using PID tracking config!")
+        else:
+            raise ValueError(f"Unknown controller type: {controller_type}")
             
         # create reference trajectory function
         ref_traj_obj = TrajectoryRef.get_by_value(ref_traj_name)
         ref_traj_func = ref_traj_obj.ref(self.env_config.ref_config)
 
         # create controller class
-        if "datt" in controller_type:
+        if controller_type == "datt" or controller_type == "datt_adaptive":
             self.controller = DATTController(self.env_config, self.control_config)
-        else:
+        elif controller_type == "mpc":
             self.controller = MPPIController(self.env_config, self.control_config)
+        elif controller_type == "pid":
+            self.controller = PIDController(self.env_config, self.control_config)
+        else:
+            raise ValueError(f"Unknown controller type: {controller_type}")
+        
         print("\033[93m[rollout]\033[0m Created controller!")
         # set the reference trajectory function
         self.controller.ref_func = ref_traj_func
@@ -182,7 +195,7 @@ def main():
     # get launch params
     quad_name = rospy.get_param("~quad_name", "kolibri")
     ref_traj_name = rospy.get_param("~ref_traj_name", "circle")
-    controller_type = rospy.get_param("~controller_type", "mpc")
+    controller_type = rospy.get_param("~controller_type", "pid")
 
     rospy.loginfo(f"quad_name: {quad_name}")
     rospy.loginfo(f"ref_traj_name: {ref_traj_name}")
