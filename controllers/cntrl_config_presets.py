@@ -44,14 +44,16 @@ kolibri_hover_adaptive_config.adaptive_policy_name = None
 
 # Kolibri tracking
 kolibri_tracking_config = DATTConfig()
-kolibri_tracking_config.policy_name = 'kolibri_tracking_circle'
-# kolibri_tracking_config.policy_name = 'kolibri_tracking_fig8'
+# kolibri_tracking_config.policy_name = 'kolibri_tracking_circle'
+kolibri_tracking_config.policy_name = 'kolibri_tracking_fig8'
 kolibri_tracking_config.task = DroneTask.TRAJFBFF
 
 # Kolibri adaptive tracking
 kolibri_tracking_adaptive_config = DATTConfig()
-kolibri_tracking_adaptive_config.policy_name = 'kolibri_tracking_circle_adaptive10'
-# kolibri_tracking_adaptive_config.policy_name = 'kolibri_tracking_fig8_adaptive10'
+# kolibri_tracking_adaptive_config.policy_name = 'kolibri_tracking_circle_adaptive20_highfid'
+# kolibri_tracking_adaptive_config.policy_name = 'kolibri_tracking_circle_adaptive10_highfid'
+# kolibri_tracking_adaptive_config.policy_name = 'kolibri_tracking_circle_adaptive10'
+kolibri_tracking_adaptive_config.policy_name = 'kolibri_tracking_fig8_adaptive10'
 kolibri_tracking_adaptive_config.task = DroneTask.TRAJFBFF
 kolibri_tracking_adaptive_config.adaptive = True
 kolibri_tracking_adaptive_config.adaptation_type = 'l1'
