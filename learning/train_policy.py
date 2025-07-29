@@ -66,8 +66,11 @@ def parse_args():
         type=int, default=0,
         help='GPU ID to use.'
     )
+
+    # num_envs = 10
+    num_envs = 50
     
-    parser.add_argument('--n-envs', type=int, help='How many "parallel" environments to run', default=10)
+    parser.add_argument('--n-envs', type=int, help='How many "parallel" environments to run', default=num_envs)
     parser.add_argument('-r', '--ref', dest='ref', type=TrajectoryRef, default=TrajectoryRef.LINE_REF)
     parser.add_argument('--seed', dest='seed', type=int, default=None,
         help='Seed to use for randomizing reference trajectories during training.'
@@ -210,7 +213,8 @@ def train():
 
         kwargs = {}
         if issubclass(algo_class, OffPolicyAlgorithm):
-            kwargs['train_freq'] = (5000, 'step')
+            train_freq = int(n_envs / 10 * 5000)
+            kwargs['train_freq'] = (train_freq, 'step')
 
         policy_network_type = 'MlpPolicy'
         print(f'Using policy network type: {policy_network_type}')
@@ -229,8 +233,9 @@ def train():
         print('CONTINUING TRAINING!')
 
     if checkpoint:
+        save_freq = int(2500000 / n_envs)
         checkpoint_callback = CheckpointCallback(
-            save_freq=250000,
+            save_freq=save_freq,
             save_path=SAVED_POLICY_DIR,
             name_prefix=policy_name
         )
