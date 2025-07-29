@@ -11,7 +11,9 @@ from DATT.quadsim.control import Controller
 
 from DATT.quadsim.models import RBModel
 from DATT.configuration.configuration import AllConfig
+from DATT.learning.adaptation_module import Adapation
 
+from time import time
 
 
 torch.set_default_tensor_type('torch.cuda.FloatTensor')
@@ -34,15 +36,21 @@ class MPPIController(Controller):
 		super().__init__()
 		# super().__init__(**kwargs)
 		# self.model = model
+		self.config = config
 		self.mppi_config = cntrl_config
 		# self.env_config = env_config
 		# self.drone_config = drone_config
 		self.mppi_controller = MPPI_thrust_omega(config, cntrl_config)
 		self.f_t = np.zeros(3)
-		self.runL1 = True
+
+		self.runL1 = False
 
 		self.prev_t = 0
 		self.start_pos = np.zeros(3)
+
+		self.adaptation_module = Adapation("l1",
+											self.config.sim_config.g,
+											)
 
 	def response(self, **response_inputs):
 		t = response_inputs.get('t')
@@ -68,8 +76,18 @@ class MPPIController(Controller):
 		# # action = self.mppi_controller.policy_cf(state=state_torch, time=t).cpu().numpy()
 		# # start = time.time()
 
+		wind_terms = self.adaptation_module.adaptation_step(vel, self.f_t)
+		print("Wind terms:", wind_terms)
+		
+		L1_adapt = torch.zeros(3)
+		if self.runL1:
+			L1_adapt = torch.as_tensor(wind_terms, dtype=torch.float32)
+
 		# if self.pseudo_adapt:
-		action = self.mppi_controller.policy_with_ref_func(state=state_torch, time=t, new_ref_func = ref_func_obj).cpu().numpy()
+		tic = time()
+		# action = self.mppi_controller.policy_with_ref_func(state=state_torch, time=t, new_ref_func = ref_func_obj).cpu().numpy()
+		action = self.mppi_controller.policy_with_ref_func(state=state_torch, time=t, new_ref_func = ref_func_obj, L1_adapt=L1_adapt).cpu().numpy()
+		# print(f"MPPI time: {time() - tic:.4f} seconds")
 		# else:
 		# action = self.mppi_controller.policy_with_ref_func(state=state_torch, time=t, new_ref_func=self.ref_func_t, L1_adapt=L1_adapt).cpu().numpy()
 		# print(time.time() - start)

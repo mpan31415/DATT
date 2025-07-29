@@ -9,15 +9,17 @@ from utils.conversion import *
 from DATT.configuration import (
     kolibri_tracking,
     kolibri_tracking_adaptive,
+    kolibri_mppi,
 )
 from DATT.controllers import cntrl_config_presets
 from DATT.controllers.datt_controller import DATTController
+from DATT.controllers.mppi_controller import MPPIController
 from DATT.refs import TrajectoryRef
 
 
 class TrajTrackingRolloutNode:
 
-    def __init__(self, quad_name="kolibri", ref_traj_name="circle", adaptive=False):
+    def __init__(self, quad_name="kolibri", ref_traj_name="circle", controller_type=False):
 
         self.dt = 0.02  # seconds
         ref_traj_name = "my_" + ref_traj_name + "_ref"
@@ -46,22 +48,29 @@ class TrajTrackingRolloutNode:
         self.state = StateStruct()
 
         # configs for creating the controller
-        if adaptive:
-            self.datt_config = kolibri_tracking_adaptive.config
-            self.control_config = cntrl_config_presets.kolibri_tracking_adaptive_config
-            print("\033[93m[rollout]\033[0m Using adaptive tracking config!")
-        else:
-            self.datt_config = kolibri_tracking.config
+        if controller_type == "datt":
+            self.env_config = kolibri_tracking.config
             self.control_config = cntrl_config_presets.kolibri_tracking_config
-            print("\033[93m[rollout]\033[0m Using standard tracking config!")
-
+            print("\033[93m[rollout]\033[0m Using standard DATT tracking config!")
+        elif controller_type == "datt_adaptive":
+            self.env_config = kolibri_tracking_adaptive.config
+            self.control_config = cntrl_config_presets.kolibri_tracking_adaptive_config
+            print("\033[93m[rollout]\033[0m Using adaptive DATT tracking config!")
+        elif controller_type == "mpc":
+            self.env_config = kolibri_mppi.config
+            self.control_config = cntrl_config_presets.mppi_config
+            print("\033[93m[rollout]\033[0m Using L1 MPC tracking config!")
+            
         # create reference trajectory function
         ref_traj_obj = TrajectoryRef.get_by_value(ref_traj_name)
-        ref_traj_func = ref_traj_obj.ref(self.datt_config.ref_config)
+        ref_traj_func = ref_traj_obj.ref(self.env_config.ref_config)
 
         # create controller class
-        self.controller = DATTController(self.datt_config, self.control_config)
-        print("\033[93m[rollout]\033[0m Created DATT controller!")
+        if "datt" in controller_type:
+            self.controller = DATTController(self.env_config, self.control_config)
+        else:
+            self.controller = MPPIController(self.env_config, self.control_config)
+        print("\033[93m[rollout]\033[0m Created controller!")
         # set the reference trajectory function
         self.controller.ref_func = ref_traj_func
         self.controller.start_pos = np.zeros(3)
@@ -72,7 +81,7 @@ class TrajTrackingRolloutNode:
             'state' : self.state, 
         }
         self.controller.response(**warmup_inputs)
-        print("\033[93m[rollout]\033[0m Warmed up DATT controller!")
+        print("\033[93m[rollout]\033[0m Warmed up controller!")
 
         # initial countdown
         self.time_start = rospy.Time.now()
@@ -173,14 +182,14 @@ def main():
     # get launch params
     quad_name = rospy.get_param("~quad_name", "kolibri")
     ref_traj_name = rospy.get_param("~ref_traj_name", "circle")
-    adaptive = rospy.get_param("~adaptive", False)
+    controller_type = rospy.get_param("~controller_type", "mpc")
 
     rospy.loginfo(f"quad_name: {quad_name}")
     rospy.loginfo(f"ref_traj_name: {ref_traj_name}")
-    rospy.loginfo(f"adaptive: {adaptive}")
+    rospy.loginfo(f"controller_type: {controller_type}")
 
     # create node class
-    node = TrajTrackingRolloutNode(quad_name=quad_name, ref_traj_name=ref_traj_name, adaptive=adaptive)
+    node = TrajTrackingRolloutNode(quad_name=quad_name, ref_traj_name=ref_traj_name, controller_type=controller_type)
     rospy.spin()
 
 

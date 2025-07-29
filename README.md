@@ -193,6 +193,12 @@ python3 main.py --cntrl datt --cntrl_config kolibri_tracking_config --env_config
 # kolibri tracking (with L1 adaptation)
 python3 main.py --cntrl datt --cntrl_config kolibri_tracking_adaptive_config --env_config kolibri_tracking_adaptive.py --ref my_circle_ref
 
+# MPPI controller
+python3 main.py --cntrl mppi --cntrl_config mppi_config --env_config kolibri_mppi.py --ref my_circle_ref
+
+# PID controller
+python3 main.py --cntrl pid --cntrl_config pid_config --env_config kolibri_pid.py --ref my_circle_ref
+
 # hover
 python3 main.py --cntrl datt --cntrl_config datt_hover_config --env_config datt_hover.py --ref hover
 # trajectory tracking without adaptation
