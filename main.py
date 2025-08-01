@@ -70,6 +70,9 @@ if __name__ == "__main__":
 
     dists = [
     ConstantForce(np.array([0.0, 0.0, 0.0]))
+    # ConstantForce(np.array([0.5, 0.5, 0.5]))
+    # ConstantForce(np.array([2.0, 2.0, 2.0]))
+
     # WindField(pos=np.array((-1, 1.5, 0.0)), direction=np.array((1, 0, 0)), noisevar=25.0, vmax=1500.0, decay_long=1.8)
     ]
     ts = quadsim.simulate(dt=dt, t_end=t_end, controller=controller, dists=dists)

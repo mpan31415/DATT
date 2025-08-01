@@ -44,16 +44,15 @@ kolibri_hover_adaptive_config.adaptive_policy_name = None
 
 # Kolibri tracking
 kolibri_tracking_config = DATTConfig()
-# kolibri_tracking_config.policy_name = 'kolibri_tracking_circle'
-kolibri_tracking_config.policy_name = 'kolibri_tracking_fig8'
+kolibri_tracking_config.policy_name = 'kolibri_tracking_circle'
+# kolibri_tracking_config.policy_name = 'kolibri_tracking_fig8'
 kolibri_tracking_config.task = DroneTask.TRAJFBFF
 
 # Kolibri adaptive tracking
 kolibri_tracking_adaptive_config = DATTConfig()
-# kolibri_tracking_adaptive_config.policy_name = 'kolibri_tracking_circle_adaptive20_highfid'
-# kolibri_tracking_adaptive_config.policy_name = 'kolibri_tracking_circle_adaptive10_highfid'
-# kolibri_tracking_adaptive_config.policy_name = 'kolibri_tracking_circle_adaptive10'
-kolibri_tracking_adaptive_config.policy_name = 'kolibri_tracking_fig8_adaptive10'
+# kolibri_tracking_adaptive_config.policy_name = 'kolibri_tracking_circle_adaptive10_highfid_50envs'
+kolibri_tracking_adaptive_config.policy_name = 'kolibri_tracking_fig8_adaptive10_highfid_50envs'
+# kolibri_tracking_adaptive_config.policy_name = 'kolibri_tracking_fig8_adaptive10_highfid_50envs_new'
 kolibri_tracking_adaptive_config.task = DroneTask.TRAJFBFF
 kolibri_tracking_adaptive_config.adaptive = True
 kolibri_tracking_adaptive_config.adaptation_type = 'l1'
@@ -65,7 +64,7 @@ kolibri_tracking_adaptive_config.adaptive_policy_name = None
 
 mppi_config = MPPIConfig()
 mppi_config.H = 40
-mppi_config.N = 4096
+mppi_config.N = 1024
 mppi_config.run_L1 = False
 ### misc ###
 mppi_config.show_wind_terms = False
@@ -73,12 +72,9 @@ mppi_config.show_policy_time = False
 
 
 pid_config = PIDConfig()
-# for tracking
+# for tracking (higher PID gains)
 pid_config.kp_pos = 24.0
 pid_config.kd_pos = 8.0
-pid_config.ki_pos = 2.4  # 0 for sim
-pid_config.kp_rot = 150.0 / 16
-pid_config.yaw_gain = 220.0 / 16
-pid_config.kp_ang = 16
+pid_config.ki_pos = 2.4
 ### misc ###
 pid_config.show_policy_time = False

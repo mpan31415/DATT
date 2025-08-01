@@ -41,8 +41,7 @@ class HoveringSchedulerNode:
 
         # times
         self.reach_target_time = 3
-        # self.policy_time = 3
-        self.policy_time = 5
+        self.policy_time = 10
         self.wait_time = 1
         target_pose_pub_period = self.reach_target_time + self.policy_time + self.wait_time
         rospy.Timer(rospy.Duration(0.01), self.publish_policy_activation)
