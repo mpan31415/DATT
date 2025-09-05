@@ -1,26 +1,16 @@
 # DATT: Deep Adaptive Trajectory Tracking for Quadrotor Control
 
-<div align="center">
+This repo is forked from the original [DATT repo](https://github.com/KevinHuang8/DATT), and contains both the original training and sim eval pipeline scripts, and most importantly, the added `datt_ros` package for rolling out the controllers in Agilicious simulation. 
 
-[[Website]](https://sites.google.com/view/deep-adaptive-traj-tracking)
-[[arXiv]](https://arxiv.org/abs/2310.09053)
-[[Firmware Code]](https://github.com/Rwik2000/crazyswarm_DATT)
+## 1. Setup
 
-[![Python Version](https://img.shields.io/badge/Python-3.8-blue.svg)](https://github.com/KevinHuang8/DATT)
-
-
-![](images/main.png)
-</div>
-
-## Setup
-
-#### 1. Create conda environment:
+#### Create conda environment:
 ```
 mamba create -n datt python=3.10
 mamba activate datt
 ```
 
-#### 2. Extra steps to solve compatibility issues:
+#### Extra steps to solve compatibility issues:
 ```
 # 1. edit requirements.txt and comment out the following 2 lines:
 gym==0.21.0
@@ -33,12 +23,12 @@ pip install git+https://github.com/openai/gym.git@9180d12e1b66e7e2a1a622614f787a
 pip install torch==1.13.0 --extra-index-url https://download.pytorch.org/whl/cu117
 ```
 
-#### 3. Then, install the requirements:
+#### Then, install the remaining dependencies:
 ```
 pip install -r requirements.txt
 ```
 
-#### 4. Configure the PYTHONPATH
+#### (IMPORTANT) Configure the PYTHONPATH
 The repo requires the parent folder exist on `PYTHONPATH`.
 
 The recommended setup is to create a folder named "python" (e.g. in your home folder) and then clone `DATT` in `~/python`.
@@ -54,52 +44,8 @@ e.g. add the following line.
 export PYTHONPATH="${HOME}/python":"${PYTHONPATH}"
 ```
 
-Change directory and rc file as needed (e.g. if using zsh).
 
-## Usage
-
-This repo contains the simulation code for training DATT and running MPPI and PID. For running on the real Crazyflie, see our drone stack here: https://github.com/Rwik2000/crazyswarm_DATT
-
-### Training
-Go to the `learning` folder and run:
-
-1. To train a trajectory tracking policy, run:
-```
-# no adaptation
-python train_policy.py -n kolibri_tracking -c kolibri_tracking.py -t trajectory_fbff --ref my_circle_ref -ts 25000000 --checkpoint True
-
-# L1 adaptation
-python train_policy.py -n kolibri_tracking_adaptive -c kolibri_tracking_adaptive.py -t trajectory_fbff --ref my_circle_ref -ts 25000000 --checkpoint True
-```
-
-2. To train a hovering policy, run:
-```
-# no adaptation
-python train_policy.py -n kolibri_hover -c kolibri_hover.py -t hover -ts 500000 --checkpoint True
-
-# L1 adaptation
-python train_policy.py -n kolibri_hover_adaptive -c kolibri_hover_adaptive.py -t hover -ts 500000 --checkpoint True
-```
-
-### Evaluating
-
-To visualize tensorboard logs, run:
-```
-cd /path/to/tensorboard/logs
-tensorboard --logdir=. --port=6006
-```
-
-To evaluate the policy, run:
-
-```
-# tracking policy
-python eval_policy.py -n policy -c DATT_config.py -t trajectory_fbff --ref random_zigzag -s 500 --viz True
-
-# hovering policy
-python eval_policy.py -n kolibri_hover_500000_steps -c kolibri_datt_hover.py -t hover --ref hover -s 500 --viz True
-```
-
-### Setting up a task / configuration
+## 2. Defining Task & Configuration
 
 Training a policy requires specifying a *task* and a *configuration*. The task describes the environment and reward, while the configuration defines various environmental parameters, such as drone mass, wind, etc., and whether/how they are randomly sampled.
 
@@ -121,7 +67,8 @@ Configurable parameters that can be randomly sampled during training can be set 
 
 Each parameter is part of some parameter group, which shares a `Sampler`, which specifies how parameters in that group should be randomly sampled if they are specified to be randomized. By default, the sampling function is just uniform sampling, but the sampling function can take in anything, like the reward or timestep, which can be used to specify a learning curriculum, etc. To add more info to the sampling function input, or to change *when* in training a parameter is resampled from the default, however, you must modify the task/environment.
 
-# Training a policy
+
+## 3. Training a Policy
 
 Run `train_policy.py` from the command line. It takes the following arguments:
 
@@ -133,13 +80,50 @@ Run `train_policy.py` from the command line. It takes the following arguments:
 
 **NOTE: must run `train_policy.py` from the `./learning/` directory for save directories to line up correctly.**
 
-# Evaluating a policy
+Go to the `learning` folder and run:
+
+1. To train a trajectory tracking policy, run:
+```
+# no adaptation
+python train_policy.py -n kolibri_tracking -c kolibri_tracking.py -t trajectory_fbff --ref my_circle_ref -ts 25000000 --checkpoint True
+
+# L1 adaptation
+python train_policy.py -n kolibri_tracking_adaptive -c kolibri_tracking_adaptive.py -t trajectory_fbff --ref my_circle_ref -ts 25000000 --checkpoint True
+```
+
+2. To train a hovering policy, run:
+```
+# no adaptation
+python train_policy.py -n kolibri_hover -c kolibri_hover.py -t hover -ts 500000 --checkpoint True
+
+# L1 adaptation
+python train_policy.py -n kolibri_hover_adaptive -c kolibri_hover_adaptive.py -t hover -ts 500000 --checkpoint True
+```
+
+To visualize tensorboard logs, run:
+```
+cd /path/to/tensorboard/logs
+tensorboard --logdir=. --port=6006
+```
+
+
+## 4. Evaluating a policy
 
 Run `eval_policy.py` with the policy name, task, algorithm the policy was trained on, and the number of evaluation steps.
 
 This script currently just prints out the mean/std rewards over randomized episodes, and visualizes rollouts of the policy in sim.
 
-# Running the Simulator
+For example, run:
+
+```
+# tracking policy
+python eval_policy.py -n policy -c DATT_config.py -t trajectory_fbff --ref random_zigzag -s 500 --viz True
+
+# hovering policy
+python eval_policy.py -n kolibri_hover_500000_steps -c kolibri_datt_hover.py -t hover --ref hover -s 500 --viz True
+```
+
+## 5. Running the Simulator
 
 As stated in the paper we introduce our architecture DATT and compare it with PID and MPPI as baselines. 
 
@@ -147,7 +131,6 @@ A sample sim run can look like :
 
 ```bash
 python3 main.py --cntrl <controller name> --cntrl_config <controller config preset> --env_config <env config file> --ref <ref>
-
 ```
 
 - `cntrl` : name of controller i.e `pid` / `mppi` / `datt` [Default : `datt`]
@@ -159,16 +142,14 @@ python3 main.py --cntrl <controller name> --cntrl_config <controller config pres
 ### PID
 ```bash
 main.py --cntrl pid --cntrl_config pid_config --env_config datt.py --ref random_zigzag
-
 ```
 
 ### MPPI
 ```bash
 python3 main.py --cntrl mppi --cntrl_config mppi_config --env_config datt.py --ref random_zigzag
-
 ```
 
-## DATT
+### DATT
 
 We are providing pre-trained models for DATT for different tasks : 
 
@@ -213,6 +194,4 @@ python3 main.py --cntrl datt --cntrl_config datt_config --env_config datt.py --r
 python3 main.py --cntrl datt --cntrl_config datt_adaptive_L1_config --env_config datt_wind_adaptive.py --ref random_zigzag --seed 2023
 # trajectory tracking with adaptation with RMA adaptation
 python3 main.py --cntrl datt --cntrl_config datt_adaptive_RMA_config --env_config datt_wind_adaptive.py --ref random_zigzag --seed 2023
-
-
 ```
