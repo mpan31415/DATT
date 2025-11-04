@@ -67,8 +67,8 @@ def parse_args():
         help='GPU ID to use.'
     )
 
-    # num_envs = 10
-    num_envs = 50
+    num_envs = 10
+    # num_envs = 50
     
     parser.add_argument('--n-envs', type=int, help='How many "parallel" environments to run', default=num_envs)
     parser.add_argument('-r', '--ref', dest='ref', type=TrajectoryRef, default=TrajectoryRef.LINE_REF)
@@ -233,7 +233,8 @@ def train():
         print('CONTINUING TRAINING!')
 
     if checkpoint:
-        save_freq = int(2500000 / n_envs)
+        # save_freq = int(2500000 / n_envs)
+        save_freq = int(1000000 / n_envs)
         checkpoint_callback = CheckpointCallback(
             save_freq=save_freq,
             save_path=SAVED_POLICY_DIR,
