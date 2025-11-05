@@ -2,8 +2,8 @@
 <launch>
 
   <arg name="quad_name" default="kolibri"/>
-  <arg name="ref_traj_name" default="fig8"/>
-  <arg name="controller_type" default="pid"/>
+  <arg name="ref_traj_name" default="star"/>
+  <arg name="controller_type" default="datt_adaptive"/>
 
   <node name="traj_tracking_rollout_node" pkg="datt_ros" type="traj_tracking_rollout.py" output="screen">
     <param name="quad_name" type="string" value="$(arg quad_name)"/>

@@ -31,6 +31,8 @@ class TrajTrackingRolloutNode:
             self.offset_pos = np.array([0.0, 0.0, 1.0])
         elif ref_traj_name == "my_fig8_ref":
             self.offset_pos = np.array([1.5, 0.0, 1.0])
+        elif ref_traj_name == "my_star_ref":
+            self.offset_pos = np.array([0.0, 0.0, 1.0])
         else:
             self.offset_pos = np.array([0.0, 0.0, 0.0])
         

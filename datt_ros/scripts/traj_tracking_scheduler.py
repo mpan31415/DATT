@@ -30,6 +30,8 @@ class TrajTrackingSchedulerNode:
             self.start_pos = np.array([0.0, 0.0, 1.0])
         elif ref_traj_name == "fig8":
             self.start_pos = np.array([1.5, 0.0, 1.0])
+        elif ref_traj_name == "star":
+            self.start_pos = np.array([0.0, 0.0, 1.0])
         else:
             self.start_pos = np.array([0.0, 0.0, 0.0])
 

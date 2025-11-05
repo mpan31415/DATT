@@ -51,8 +51,9 @@ kolibri_tracking_config.task = DroneTask.TRAJFBFF
 # Kolibri adaptive tracking
 kolibri_tracking_adaptive_config = DATTConfig()
 # kolibri_tracking_adaptive_config.policy_name = 'kolibri_tracking_circle_adaptive10_highfid_50envs'
-kolibri_tracking_adaptive_config.policy_name = 'kolibri_tracking_fig8_adaptive10_highfid_50envs'
+# kolibri_tracking_adaptive_config.policy_name = 'kolibri_tracking_fig8_adaptive10_highfid_50envs'
 # kolibri_tracking_adaptive_config.policy_name = 'kolibri_tracking_fig8_adaptive10_highfid_50envs_new'
+kolibri_tracking_adaptive_config.policy_name = 'kolibri_star_tracking_local'
 kolibri_tracking_adaptive_config.task = DroneTask.TRAJFBFF
 kolibri_tracking_adaptive_config.adaptive = True
 kolibri_tracking_adaptive_config.adaptation_type = 'l1'
@@ -64,7 +65,7 @@ kolibri_tracking_adaptive_config.adaptive_policy_name = None
 
 mppi_config = MPPIConfig()
 mppi_config.H = 40
-mppi_config.N = 1024
+mppi_config.N = 2048
 mppi_config.run_L1 = False
 ### misc ###
 mppi_config.show_wind_terms = False
